@@ -145,7 +145,7 @@ async function handleQuickReply(senderId, quickReply, messageId) {
   sendToDialogFlow(senderId, quickReplyPayload);
 }
 
-async function handleDialogFlowAction(
+function handleDialogFlowAction(
   sender,
   action,
   messages,
@@ -155,9 +155,9 @@ async function handleDialogFlowAction(
   switch (action) {
     case "Code.DemasElementos.action":
 
-      await sendTextMessage(sender, "Estoy mandando una imagen y un boton"),
-        await sendImageMessage(sender, "https://www.nicepng.com/png/detail/487-4874535_ositos-para-baby-shower-png-teddy-bear-clipart.png");
-      await sendButtonMessage(sender, "Ejemplo de boton", [{
+      sendTextMessage(sender, "Estoy mandando una imagen y un boton"),
+        sendImageMessage(sender, "https://www.nicepng.com/png/detail/487-4874535_ositos-para-baby-shower-png-teddy-bear-clipart.png");
+      sendButtonMessage(sender, "Ejemplo de boton", [{
         type: "web_url",
         url: "https://www.messenger.com",
         title: "Visit Messenger",
