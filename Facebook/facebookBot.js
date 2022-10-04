@@ -8,6 +8,7 @@ const axios = require("axios");
 const config = require("../config");
 const dialogflow = require("../dialogflow");
 const { structProtoToJson } = require("./helpers/structFunctions");
+const { forever } = require("request");
 
 // Messenger API parameters
 if (!config.FB_PAGE_TOKEN) {
@@ -152,14 +153,63 @@ function handleDialogFlowAction(
   parameters
 ) {
   switch (action) {
+    case "Code.menuCarrusel.action":
+      let helados = [
+        {
+          id: 1,
+          nombre: "Helado de fresa",
+          img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Ice_Cream_dessert_02.jpg/245px-Ice_Cream_dessert_02.jpg",
+          descripcion: "Los helados de fresa son muy ricos",
+          precio: 7
+        },
+        {
+          id: 2,
+          nombre: "Helado de piña",
+          img: "https://okdiario.com/img/2019/07/07/receta-de-helado-casero-de-pina-1-655x368.jpg",
+          descripcion: "Los helados de piña son muy ricos",
+          precio: 6
+        },
+        {
+          id: 3,
+          nombre: "Helado de chocolate",
+          img: "https://www.recetasderechupete.com/wp-content/uploads/2019/07/shutterstock_1010248351-768x527.jpg",
+          descripcion: "Los helados de chocolate son muy ricos",
+          precio: 10
+        }
+      ];
+      let tarjetas = [];
+      helados.forEach(helado => {
+        tarjetas.push({
+          title: helado.nombre + " $" + helado.precio,
+          image_url: helado.img,
+          subtitle: helado.descripcion,
+
+          buttons: [
+            {
+              type: "postback",
+              title: "Hacer compra",
+              payload: "hacer_compra",
+            }, {
+              type: "postback",
+              title: "Ver mas helados",
+              payload: "ver_mas_helados",
+            }
+          ],
+        });
+      });
+      sendGenericMessage(sender,)
+
+
+      break;
     case "Codigo.quickReply.action":
       let replies = [];
       for (let i = 1; i <= 5; i++) {
         replies.push({
+          image_url: "https://www.hackingchinese.com/wp-content/uploads/2015/09/check-37583_1280.png",
           content_type: "text",
           title: i,
           payload: "si_acepto",
-          image_url: "https://www.hackingchinese.com/wp-content/uploads/2015/09/check-37583_1280.png"
+
         });
 
       }
