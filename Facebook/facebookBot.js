@@ -153,21 +153,17 @@ function handleDialogFlowAction(
 ) {
   switch (action) {
     case "Codigo.quickReply.action":
-      sendQuickReply(sender, "ejemplo de quick reply",
-        [
-          {
-            content_type: "text",
-            title: "Si",
-            payload: "si_acepto",
-            image_url: "https://www.hackingchinese.com/wp-content/uploads/2015/09/check-37583_1280.png"
-          },
-          {
-            payload: "no_acepto",
-            title: "No",
-            content_type: "text",
-            image_url: "https://freepngimg.com/thumb/cancel_button/25982-7-cancel-button-transparent.png"
-          }
-        ]);
+      let replies = [];
+      for (let i = 1; i <= 5; i++) {
+        replies.push({
+          content_type: "text",
+          title: i,
+          payload: "si_acepto",
+          image_url: "https://www.hackingchinese.com/wp-content/uploads/2015/09/check-37583_1280.png"
+        });
+
+      }
+      sendQuickReply(sender, "ejemplo de quick reply", replies);
       break;
     default:
       //unhandled action, just send back the text
