@@ -1,4 +1,7 @@
-//libraries
+
+
+
+
 const express = require("express");
 const router = express.Router();
 const request = require("request");
@@ -9,6 +12,12 @@ const config = require("../config");
 const dialogflow = require("../dialogflow");
 const { structProtoToJson } = require("./helpers/structFunctions");
 const { forever } = require("request");
+//modelos
+const ProspectoUsuario=require("../Models/ProspectoClientes");
+const { findOne } = require("../Models/ProspectoClientes");
+const Producto=require("../Models/Products");
+const HistorialVisita=require("../Models/HistorialVisitas");
+//files
 
 // Messenger API parameters
 if (!config.FB_PAGE_TOKEN) {
@@ -103,12 +112,14 @@ async function receivedMessage(event) {
   var quickReply = message.quick_reply;
 
   if (isEcho) {
-    handleEcho(messageId, appId, metadata);
+    //shandleEcho(messageId, appId, metadata);    
     return;
   } else if (quickReply) {
     handleQuickReply(senderId, quickReply, messageId);
     return;
   }
+  saveMsgUser(senderId,messageText);
+  saveUserData(senderId);
   if (messageText) {
     //send message to dialogflow
     console.log("MENSAJE DEL USUARIO: ", messageText);
@@ -116,6 +127,39 @@ async function receivedMessage(event) {
   } else if (messageAttachments) {
     handleMessageAttachments(messageAttachments, senderId);
   }
+}
+ 
+async function saveUserData(facebookId) {    
+  let userData =  await getUserData(facebookId);
+  let prospectoUsuario=new ProspectoUsuario({
+    firstName: userData.first_name,
+    lastName: userData.last_name,
+    facebookId,
+    profilePic: userData.profile_pic,
+  });
+  prospectoUsuario.save((err, res) => {
+    if (err) return console.log(err);
+    console.log("Se creo un usuario:", res);
+  });
+}
+
+async function saveMsgUser(facebookId,mensage) {     
+  let historialVisita=new HistorialVisita({    
+    facebookId,
+    mensage,
+  });
+  historialVisita.save((err, res) => {
+    if (err) return console.log(err);
+    console.log("Se guardo en el historial:", res);
+  });
+}
+function handleMessageAttachments(messageAttachments, senderId) {
+  //for now just reply
+  sendTextMessage(senderId, "Archivo adjunto recibido... gracias! .");
+}
+function handleEcho(mmessageId, appId, metadata) {
+  //for now just reply
+  sendTextMessage(mmessageId, appId, metadata);
 }
 
 function handleMessageAttachments(messageAttachments, senderId) {
@@ -145,7 +189,7 @@ async function handleQuickReply(senderId, quickReply, messageId) {
   sendToDialogFlow(senderId, quickReplyPayload);
 }
 
-function handleDialogFlowAction(
+async function handleDialogFlowAction(
   sender,
   action,
   messages,
@@ -153,6 +197,29 @@ function handleDialogFlowAction(
   parameters
 ) {
   switch (action) {
+    case"zapato.info.action":    
+    let zapmarca=parameters.fields.zapmarca.stringValue;
+    let zapinfo= await Producto.findOne({marca:zapmarca});
+    console.log("el producto es:",zapinfo);
+    sendGenericMessage(sender,[{
+      title: zapinfo.marca + " $" + zapinfo.precio,
+      image_url: zapinfo.img,
+          subtitle: zapinfo.m,
+
+          buttons: [
+            {
+              type: "postback",
+              title: "Hacer compra",
+              payload: "hacer_compra",
+            }, {
+              type: "postback",
+              title: "Ver mas zapatos",
+              payload: "ver_mas_zapatos",
+            }
+          ],
+        }
+    ]);
+    break;
     case "Code.DemasElementos.action":
 
       sendTextMessage(sender, "Estoy mandando una imagen y un boton"),

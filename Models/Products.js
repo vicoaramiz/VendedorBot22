@@ -1,12 +1,12 @@
 const mongoose =require('mongoose');
 const Schema =mongoose.Schema;
 
-const ProductoSchema=new  Schema( {
+const ProductSchema=new  Schema( {
     marca: String,
     modelo: String,
-    precio: String,
-    purl: String,
+    precio: Number,
+    img: String,
   },
   { timestamps: true }
 );
-module.exports=mongoose.model('Productos',ProductoSchema);
+module.exports=mongoose.model('Products',ProductSchema);
