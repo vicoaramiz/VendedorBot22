@@ -1,4 +1,7 @@
-//libraries
+
+
+
+
 const express = require("express");
 const router = express.Router();
 const request = require("request");
@@ -12,7 +15,8 @@ const { forever } = require("request");
 //modelos
 const ProspectoUsuario=require("../Models/ProspectoClientes");
 const { findOne } = require("../Models/ProspectoClientes");
-const Producto=require("../Models/Productos");
+const Producto=require("../Models/Products");
+const HistorialVisita=require("../Models/HistorialVisitas");
 //files
 
 // Messenger API parameters
@@ -108,12 +112,13 @@ async function receivedMessage(event) {
   var quickReply = message.quick_reply;
 
   if (isEcho) {
-    //handleEcho(messageId, appId, metadata);    
+    //shandleEcho(messageId, appId, metadata);    
     return;
   } else if (quickReply) {
     handleQuickReply(senderId, quickReply, messageId);
     return;
   }
+  saveMsgUser(senderId,messageText);
   saveUserData(senderId);
   if (messageText) {
     //send message to dialogflow
@@ -123,9 +128,8 @@ async function receivedMessage(event) {
     handleMessageAttachments(messageAttachments, senderId);
   }
 }
- async function saveUserData(facebookId) {
-  //let isClien= findOne({facebookId});
-  //if(isClien)return;
+ 
+async function saveUserData(facebookId) {    
   let userData =  await getUserData(facebookId);
   let prospectoUsuario=new ProspectoUsuario({
     firstName: userData.first_name,
@@ -138,13 +142,24 @@ async function receivedMessage(event) {
     console.log("Se creo un usuario:", res);
   });
 }
+
+async function saveMsgUser(facebookId,mensage) {     
+  let historialVisita=new HistorialVisita({    
+    facebookId,
+    mensage,
+  });
+  historialVisita.save((err, res) => {
+    if (err) return console.log(err);
+    console.log("Se guardo en el historial:", res);
+  });
+}
 function handleMessageAttachments(messageAttachments, senderId) {
   //for now just reply
   sendTextMessage(senderId, "Archivo adjunto recibido... gracias! .");
 }
 function handleEcho(mmessageId, appId, metadata) {
   //for now just reply
-  sendTextMessage(mmessageId);
+  sendTextMessage(mmessageId, appId, metadata);
 }
 
 function handleMessageAttachments(messageAttachments, senderId) {
@@ -174,7 +189,7 @@ async function handleQuickReply(senderId, quickReply, messageId) {
   sendToDialogFlow(senderId, quickReplyPayload);
 }
 
-function handleDialogFlowAction(
+async function handleDialogFlowAction(
   sender,
   action,
   messages,
@@ -184,12 +199,12 @@ function handleDialogFlowAction(
   switch (action) {
     case"zapato.info.action":    
     let zapmarca=parameters.fields.zapmarca.stringValue;
-    let zapinfo= Producto.findOne({marca:zapmarca});
+    let zapinfo= await Producto.findOne({marca:zapmarca});
     console.log("el producto es:",zapinfo);
     sendGenericMessage(sender,[{
       title: zapinfo.marca + " $" + zapinfo.precio,
-          url: zapinfo.img,
-          subtitle: zapinfo.modelo,
+      image_url: zapinfo.img,
+          subtitle: zapinfo.m,
 
           buttons: [
             {
