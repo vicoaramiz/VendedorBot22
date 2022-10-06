@@ -9,6 +9,11 @@ const config = require("../config");
 const dialogflow = require("../dialogflow");
 const { structProtoToJson } = require("./helpers/structFunctions");
 const { forever } = require("request");
+//modelos
+const ProspectoUsuario=require("../Models/ProspectoClientes");
+const { findOne } = require("../Models/ProspectoClientes");
+const Producto=require("../Models/Productos");
+//files
 
 // Messenger API parameters
 if (!config.FB_PAGE_TOKEN) {
@@ -103,7 +108,7 @@ async function receivedMessage(event) {
   var quickReply = message.quick_reply;
 
   if (isEcho) {
-    handleEcho(messageId, appId, metadata);
+    //handleEcho(messageId, appId, metadata);    
     return;
   } else if (quickReply) {
     handleQuickReply(senderId, quickReply, messageId);
@@ -118,10 +123,10 @@ async function receivedMessage(event) {
     handleMessageAttachments(messageAttachments, senderId);
   }
 }
- function saveUserData(facebookId) {
-  let isClien= findOne({facebookId});
-  if(isClien)return;
-  let userData =  getUserData(facebookId);
+ async function saveUserData(facebookId) {
+  //let isClien= findOne({facebookId});
+  //if(isClien)return;
+  let userData =  await getUserData(facebookId);
   let prospectoUsuario=new ProspectoUsuario({
     firstName: userData.first_name,
     lastName: userData.last_name,
@@ -137,7 +142,10 @@ function handleMessageAttachments(messageAttachments, senderId) {
   //for now just reply
   sendTextMessage(senderId, "Archivo adjunto recibido... gracias! .");
 }
-
+function handleEcho(mmessageId, appId, metadata) {
+  //for now just reply
+  sendTextMessage(mmessageId);
+}
 
 function handleMessageAttachments(messageAttachments, senderId) {
   //for now just reply
@@ -174,6 +182,29 @@ function handleDialogFlowAction(
   parameters
 ) {
   switch (action) {
+    case"zapato.info.action":    
+    let zapmarca=parameters.fields.zapmarca.stringValue;
+    let zapinfo= Producto.findOne({marca:zapmarca});
+    console.log("el producto es:",zapinfo);
+    sendGenericMessage(sender,[{
+      title: zapinfo.marca + " $" + zapinfo.precio,
+          url: zapinfo.img,
+          subtitle: zapinfo.modelo,
+
+          buttons: [
+            {
+              type: "postback",
+              title: "Hacer compra",
+              payload: "hacer_compra",
+            }, {
+              type: "postback",
+              title: "Ver mas zapatos",
+              payload: "ver_mas_zapatos",
+            }
+          ],
+        }
+    ]);
+    break;
     case "Code.DemasElementos.action":
 
       sendTextMessage(sender, "Estoy mandando una imagen y un boton"),

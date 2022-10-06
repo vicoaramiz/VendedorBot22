@@ -27,6 +27,7 @@ console.log("Conexion con la base de datos exitosa");
 
 
 app.use("/messenger", require("./Facebook/facebookBot"));
+app.use("/api",require("./routes/api"));
 
 app.get("/", (req, res) => {
   return res.send("Chatbot Funcionando 🤖🤖🤖");
