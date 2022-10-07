@@ -1,5 +1,10 @@
 const express   = require('express');
 const ProspectoUsuarioController = require('../Controllers/ProspectoUsuarioController');
+<<<<<<< HEAD
+=======
+const HistorialVisitas = require('..//Models/HistorialVisitas');
+const HistoriaUsuarios = require('../Models/HistoriaUsuarios');
+>>>>>>> 84fbadf (modificaciones varias)
 const router=express.Router();
 const Product=require("../Models/Products");
 const Promociones = require('../Models/Promociones');
@@ -28,7 +33,17 @@ router.post("/producto",(req,res)=>{
 
 
 router.get("/producto",(req,res)=>{
+<<<<<<< HEAD
     
+=======
+  HistoriaUsuarios.find();
+    res.json(HistoriaUsuarios);
+}); 
+router.get("/ultimohistorial",(req,res)=>{
+  
+   console.log(HistorialVisitas);
+ res.json(HistorialVisitas);
+>>>>>>> 84fbadf (modificaciones varias)
     
 }); 
 router.get('prospectousuario/:id', function(req, res) {
@@ -38,7 +53,17 @@ router.get('/usearch', function(req, res) {
   //  res.json({ok:true,msg:"esta funcionanado"});
     ProspectoUsuarioController.usearch(req, res)
   })
+<<<<<<< HEAD
 
+=======
+  router.get("/historia", (req, res) => {
+    HistorialVisitas
+      .find()
+      .then((data) => res.json(data))
+      
+      .catch((error) => res.json({ message: error }));
+  });
+>>>>>>> 84fbadf (modificaciones varias)
 module.exports=router;
 
 
