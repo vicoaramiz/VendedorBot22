@@ -1,7 +1,3 @@
-
-
-
-
 const express = require("express");
 const router = express.Router();
 const request = require("request");
@@ -16,6 +12,7 @@ const { forever } = require("request");
 const ProspectoUsuario=require("../Models/ProspectoClientes");
 const { findOne } = require("../Models/ProspectoClientes");
 const Producto=require("../Models/Products");
+const Cliente=require("../Models/Clientes");
 const HistorialVisita=require("../Models/HistorialVisitas");
 //files
 
@@ -112,7 +109,7 @@ async function receivedMessage(event) {
   var quickReply = message.quick_reply;
 
   if (isEcho) {
-    //shandleEcho(messageId, appId, metadata);    
+    handleEcho(messageId);    
     return;
   } else if (quickReply) {
     handleQuickReply(senderId, quickReply, messageId);
@@ -128,7 +125,7 @@ async function receivedMessage(event) {
     handleMessageAttachments(messageAttachments, senderId);
   }
 }
- 
+
 async function saveUserData(facebookId) {    
   let userData =  await getUserData(facebookId);
   let prospectoUsuario=new ProspectoUsuario({
@@ -140,6 +137,21 @@ async function saveUserData(facebookId) {
   prospectoUsuario.save((err, res) => {
     if (err) return console.log(err);
     console.log("Se creo un usuario:", res);
+  });
+}
+async function saveNewCliente(telefono,facebookId) {    
+  let userData =  await getUserData(facebookId);
+  console.log(telefono)
+  let cliente=new Cliente({
+    firstName: userData.first_name,
+    lastName: userData.last_name,
+    facebookId,
+    profilePic: userData.profile_pic,
+    phone:telefono,
+  });
+  cliente.save((err, res) => {
+    if (err) return console.log(err);
+    console.log("Se creo un nuevo cliente:", res);
   });
 }
 
@@ -157,10 +169,7 @@ function handleMessageAttachments(messageAttachments, senderId) {
   //for now just reply
   sendTextMessage(senderId, "Archivo adjunto recibido... gracias! .");
 }
-function handleEcho(mmessageId, appId, metadata) {
-  //for now just reply
-  sendTextMessage(mmessageId, appId, metadata);
-}
+
 
 function handleMessageAttachments(messageAttachments, senderId) {
   //for now just reply
@@ -204,8 +213,7 @@ async function handleDialogFlowAction(
     sendGenericMessage(sender,[{
       title: zapinfo.marca + " $" + zapinfo.precio,
       image_url: zapinfo.img,
-          subtitle: zapinfo.m,
-
+          subtitle: zapinfo.modelo,
           buttons: [
             {
               type: "postback",
@@ -220,78 +228,14 @@ async function handleDialogFlowAction(
         }
     ]);
     break;
-    case "Code.DemasElementos.action":
-
-      sendTextMessage(sender, "Estoy mandando una imagen y un boton"),
-        sendImageMessage(sender, "https://www.nicepng.com/png/detail/487-4874535_ositos-para-baby-shower-png-teddy-bear-clipart.png");
-      sendButtonMessage(sender, "Ejemplo de boton", [{
-        type: "web_url",
-        url: "https://www.messenger.com",
-        title: "Visit Messenger",
-      }]);
+    case"guardartlf.action":    
+      let usr=8070622466343117
+      let telefono=parameters.fields.telefono.stringValue;     
+      saveNewCliente(telefono,usr);      
+      //sendQuickReply(sender, "", replies);
+      handleMessages(messages, sender);
       break;
-    case "Code.menuCarrusel.action":
-      let helados = [
-        {
-          id: 1,
-          nombre: "Helado de fresa",
-          img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Ice_Cream_dessert_02.jpg/245px-Ice_Cream_dessert_02.jpg",
-          descripcion: "Los helados de fresa son muy ricos",
-          precio: 7
-        },
-        {
-          id: 2,
-          nombre: "Helado de piña",
-          img: "https://okdiario.com/img/2019/07/07/receta-de-helado-casero-de-pina-1-655x368.jpg",
-          descripcion: "Los helados de piña son muy ricos",
-          precio: 6
-        },
-        {
-          id: 3,
-          nombre: "Helado de chocolate",
-          img: "https://www.recetasderechupete.com/wp-content/uploads/2019/07/shutterstock_1010248351-768x527.jpg",
-          descripcion: "Los helados de chocolate son muy ricos",
-          precio: 10
-        }
-      ];
-      let tarjetas = [];
-      helados.forEach(helado => {
-        tarjetas.push({
-          title: helado.nombre + " $" + helado.precio,
-          image_url: helado.img,
-          subtitle: helado.descripcion,
-
-          buttons: [
-            {
-              type: "postback",
-              title: "Hacer compra",
-              payload: "hacer_compra",
-            }, {
-              type: "postback",
-              title: "Ver mas helados",
-              payload: "ver_mas_helados",
-            }
-          ],
-        });
-      });
-      sendGenericMessage(sender,)
-
-
-      break;
-    case "Codigo.quickReply.action":
-      let replies = [];
-      for (let i = 1; i <= 5; i++) {
-        replies.push({
-          image_url: "https://www.hackingchinese.com/wp-content/uploads/2015/09/check-37583_1280.png",
-          content_type: "text",
-          title: i,
-          payload: "si_acepto",
-
-        });
-
-      }
-      sendQuickReply(sender, "ejemplo de quick reply", replies);
-      break;
+      s
     default:
       //unhandled action, just send back the text
       handleMessages(messages, sender);

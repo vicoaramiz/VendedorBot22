@@ -9,3 +9,5 @@ const HistorialUsuariosSchema=new  Schema( {
   { timestamps: true }
 );
 module.exports=mongoose.model('HistoriaUsuarios',HistorialUsuariosSchema);
+
+
