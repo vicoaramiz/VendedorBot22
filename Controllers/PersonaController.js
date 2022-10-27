@@ -20,6 +20,8 @@ const addPersona=(req,res)=>{
         lastName,
         facebookId,
         profilePic,
+        email,
+        link,
     })
     persona.save((err,persona)=>{
         err&&res.send(500).send(err.message)

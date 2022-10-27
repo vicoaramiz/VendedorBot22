@@ -9,3 +9,18 @@ const ValoracionSchema=new  Schema( {
   { timestamps: true }
 );
 module.exports=mongoose.model('Valoracion',ValoracionSchema);
+
+//clients: String,
+  //  monto:Number,
+    //estado: String,
+ //   DetallePedidos: [{
+ //       type: Schema.Types.ObjectId,
+  //      ref: 'DetallePedido'
+ //   }],
+ //const DetallePedidoSchema=new  Schema( {    
+ //   producto: String,
+ //   precio: String,
+ //   cantidad: String,
+ // },
+ // { timestamps: true }
+//);

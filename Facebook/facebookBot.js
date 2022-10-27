@@ -9,8 +9,8 @@ const dialogflow = require("../dialogflow");
 const { structProtoToJson } = require("./helpers/structFunctions");
 const { forever } = require("request");
 //modelos
-const ProspectoUsuario=require("../Models/ProspectoClientes");
-const { findOne } = require("../Models/ProspectoClientes");
+const ProspectoUsuario=require("../Models/Personas");
+const { findOne } = require("../Models/Personas");
 const Producto=require("../Models/Products");
 const Cliente=require("../Models/Clientes");
 const HistorialVisita=require("../Models/HistorialVisitas");
