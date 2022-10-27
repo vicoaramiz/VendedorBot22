@@ -1,10 +1,6 @@
 module.exports = {
   //Facebook App credentials
-<<<<<<< HEAD
   FB_PAGE_TOKEN: "EAAFmJM5QMOMBAPoLZA7TrVHRyZCv8KhFR6yyZAF4w0BiSbQDjo0eeBUPFZAZAGn8EGzp0h78wQFtgWzy5sET3VblemABtNCQJj8V1oyRB1pUjOsYTucktCYQT2V9GjGC9klSXOXCm6ziZBfaTTFVbmkv6uJirzvyuT6hEimZBXCavsYciiQXyzW",
-=======
-  FB_PAGE_TOKEN: "EAAFmJM5QMOMBAMZCxPYC2fLFb8lNFRRaX49loyG0ZBmLFEDlojUpCWiGyFVMFfoDsOKn0PBxq8bG06N3wpTFPZCs1uknyDUmb0lC2B2OlxNicu7LZBtL2gj5CL6gROamQWjJ3ft51scOib8TTRGDH2wgAZAZB8aULcUWCzEEG3pK2vvhgCWAGc",
->>>>>>> 84fbadf (modificaciones varias)
   FB_VERIFY_TOKEN: "pruebastk",
   FB_APP_SECRET: "e232edeb0dd313bef7ddeb02ee4c5445",
   //Google project credentials
