@@ -1,5 +1,6 @@
 const mongosse=require('mongoose')
 const Persona= require('../Models/Personas')
+const Tipo= require('../Models/Tipo')
 const findAllpersons=(req,res) =>{
     Persona.find((err,personas)=>{
         err&&res.send(500).send(err.message)
@@ -22,11 +23,21 @@ const addPersona=(req,res)=>{
         profilePic,
         email,
         link,
+        tipo,
     })
     persona.save((err,persona)=>{
         err&&res.send(500).send(err.message)
         res.status(200).json(persona)
     })
 }
+ const prospecto=(req,res)=>{     
+    Persona.find({}, function (err, personas) {
+        Tipo.populate(personas, { path: "tipo" }, function (err, personas) {
+          res.status(200).send(personas);
+        
+        //return res.json(persona)
+    })
+})
+ }
 
-module.exports={findAllpersons,findById,addPersona}
+module.exports={findAllpersons,findById,addPersona,prospecto}
